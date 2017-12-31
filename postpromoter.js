@@ -3,6 +3,7 @@ const steem = require('steem');
 var utils = require('./utils');
 
 var account = null;
+var bidbot = null;
 var last_trans = 0;
 var outstanding_bids = [];
 var delegators = [];
@@ -80,8 +81,9 @@ function startProcess() {
   config = JSON.parse(fs.readFileSync("config.json"));
 
   // Load the bot account info
-  steem.api.getAccounts([config.account], function (err, result) {
+  steem.api.getAccounts([config.account, config.bidbot], function (err, result) {
     account = result[0];
+    bidbot = result[1];
 
     // Check if there are any rewards to claim.
     claimRewards();
@@ -217,9 +219,10 @@ function getTransactions() {
   if (first_load && last_trans > 0) {
     utils.log('First run - loading all transactions since bot was stopped.');
     num_trans = 1000;
+    num_trans = 1;
   }
 
-  steem.api.getAccountHistory(account.name, -1, num_trans, function (err, result) {
+  steem.api.getAccountHistory(bidbot.name, -1, num_trans, function (err, result) {
     first_load = false;
 
     result.forEach(function(trans) {
@@ -229,7 +232,7 @@ function getTransactions() {
         if(trans[0] > last_trans) {
 
           // We only care about SBD transfers to the bot
-          if (op[0] == 'transfer' && op[1].to == account.name) {
+          if (op[0] == 'transfer' && op[1].to == bidbot.name) {
             var amount = parseFloat(op[1].amount);
             var currency = utils.getCurrency(op[1].amount);
             utils.log("Incoming Bid! From: " + op[1].from + ", Amount: " + op[1].amount + ", memo: " + op[1].memo);
