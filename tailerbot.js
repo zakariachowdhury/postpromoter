@@ -93,15 +93,19 @@ function startProcess() {
       checkAutoWithdraw();
   });
 
-  if (account && !isVoting) {
+  if (account && bidbot && !isVoting) {
     // Load the current voting power of the account
     var vp = utils.getVotingPower(account);
+    var vp2 = utils.getVotingPower(bidbot);
 
-    if(config.detailed_logging)
-      utils.log('Voting Power: ' + utils.format(vp / 100) + '% | Time until next round: ' + utils.toTimer(utils.timeTilFullPower(vp)));
 
-    // We are at 100% voting power - time to vote!
-    if (vp >= 10000 && outstanding_bids.length > 0) {
+    if(config.detailed_logging) {
+      utils.log('My Voting Power: ' + utils.format(vp / 100) + '% | Time until next round: ' + utils.toTimer(utils.timeTilFullPower(vp)));
+      utils.log('BidBot Voting Power: ' + utils.format(vp2 / 100) + '% | Time until next round: ' + utils.toTimer(utils.timeTil99Power(vp2)));
+    }
+
+    // We are at 100% voting power & Bid bot at 99.99% voting power - time to vote!
+    if (vp >= 10000 && vp2 >= 9999 && outstanding_bids.length > 0) {
 
       // Don't process any bids while we are voting due to race condition (they will be processed when voting is done).
       isVoting = first_load = true;

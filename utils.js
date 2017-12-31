@@ -1,6 +1,7 @@
 const steem = require('steem');
 
 var STEEMIT_100_PERCENT = 10000;
+var STEEMIT_99_99_PERCENT = 9999;
 var STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 var HOURS = 60 * 60;
 
@@ -83,6 +84,10 @@ function timeTilFullPower(cur_power){
      return (STEEMIT_100_PERCENT - cur_power) * STEEMIT_VOTE_REGENERATION_SECONDS / STEEMIT_100_PERCENT;
  }
 
+function timeTil99Power(cur_power){
+    return (STEEMIT_99_99_PERCENT - cur_power) * STEEMIT_VOTE_REGENERATION_SECONDS / STEEMIT_99_99_PERCENT;
+ }
+
  function getVestingShares(account) {
      var effective_vesting_shares = parseFloat(account.vesting_shares.replace(" VESTS", ""))
        + parseFloat(account.received_vesting_shares.replace(" VESTS", ""))
@@ -125,6 +130,7 @@ function format(n, c, d, t) {
    getVotingPower: getVotingPower,
    getVoteValue: getVoteValue,
    timeTilFullPower: timeTilFullPower,
+   timeTil99Power: timeTil99Power,
    getVestingShares: getVestingShares,
    getCurrency: getCurrency,
    format: format,
