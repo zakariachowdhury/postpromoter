@@ -27,7 +27,7 @@ Then set the following options in config.json:
 
 ## Run
 ```
-$ node postpromoter.js
+$ node tailerbot.js
 ```
 
 ## API Setup
